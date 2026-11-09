@@ -15,9 +15,13 @@ export function setSessionCookie(
   response: Response,
   session: CookieSession,
 ): void {
-  response.cookie(SESSION_COOKIE_NAME, session.token, sessionCookieOptions);
+  const options = {
+      ...sessionCookieOptions, 
+      expires : new Date (session.expires_at), 
+  };
+  response.cookie(SESSION_COOKIE_NAME, session.token, options);
 }
 
 export function clearSessionCookie(response: Response): void {
   response.clearCookie(SESSION_COOKIE_NAME, sessionCookieOptions);
-}
+} 
