@@ -8,6 +8,7 @@ import {
   listOrdersForUser,
 } from "../orders/index.ts";
 import { listAllProducts } from "../products.ts";
+import { findApiKey } from "../auth/apiKeys.ts";
 
 export function createApiRouter(deps: Dependencies): Router {
   const { db } = deps;
@@ -49,7 +50,20 @@ export function createApiRouter(deps: Dependencies): Router {
     res.json({ products: listAllProducts(db) });
   });
 
-  router.get("/api/integrations/warehouse/orders", (_req, res) => {
+  router.get("/api/integrations/warehouse/orders", (req, res) => {
+    let apiKeyData;
+    const apiKey = req.headers["x-api-key"];
+    if (typeof apiKey === "string") {
+        apiKeyData = findApiKey(db, apiKey);
+    }
+    if (!apiKeyData) {
+        res.status(401).json({ error: "key is missing" });
+        return;
+    }
+    if (apiKeyData.scope !== "orders:read") {
+        res.status(403).json({ error: "key is mising orders:read scope" });
+        return;
+    }
     const orders = listAllOrders(db).map((order) => ({
       id: order.id,
       status: order.status,
