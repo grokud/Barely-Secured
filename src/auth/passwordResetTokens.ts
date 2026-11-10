@@ -1,4 +1,6 @@
 import type { DatabaseSync } from "node:sqlite";
+import { hash, randomBytes } from "node:crypto";
+
 
 type PasswordResetToken = {
   id: number;
@@ -13,16 +15,16 @@ type CreatedPasswordResetToken = PasswordResetToken & {
 };
 
 function hashPasswordResetToken(token: string): string {
-  return token;
+  return hash('sha-256',token);
 }
 
 export function createPasswordResetToken(
   db: DatabaseSync,
   userId: number,
 ): CreatedPasswordResetToken {
-  const token = `${userId}-${Date.now()}`;
+  const token = randomBytes(32).toString('hex');//;
   const tokenHash = hashPasswordResetToken(token);
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+  const expiresAt = new Date(Date.now() + 60 * 15 * 1000).toISOString();
 
   db.prepare(`
       INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
