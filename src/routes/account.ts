@@ -15,6 +15,7 @@ import {
   setPendingTotpSecret,
   updateUserEmail,
 } from "../auth/users.ts";
+import { verifyPassword } from "../auth/passwords.ts";
 import { csrfTokensMatch } from "../csrf.ts";
 import type { Dependencies } from "../dependencies.ts";
 import { sendErrorPage } from "../errors.ts";
@@ -177,7 +178,7 @@ export function createAccountRouter(deps: Dependencies): Router {
       return;
     }
     const currentPassword = String(req.body.currentPassword ?? "");
-    if (!currentPassword) {
+    if (!currentPassword || !verifyPassword(currentPassword, current.user.password_hash)) {
       res
         .status(403)
         .type("html")
@@ -189,6 +190,7 @@ export function createAccountRouter(deps: Dependencies): Router {
         );
       return;
     }
+
     const email = normalizeEmail(String(req.body.email ?? ""));
     if (!email) {
       res
