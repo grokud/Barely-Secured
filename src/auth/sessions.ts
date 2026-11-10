@@ -79,6 +79,11 @@ export function getCurrentSession(
   if (!storedSession || new Date(storedSession.expires_at) <= new Date()) {
     return undefined;
   }
+
+  if (storedSession.revoked_at) {
+    return undefined;
+  }
+
   const session = { ...storedSession, token };
 
   const user = findUserById(db, session.user_id);
