@@ -34,10 +34,15 @@ export function consumeTotpTimeStep(
 }
 
 export function verifyAndConsumeTotpCode(
-  _db: DatabaseSync,
-  _userId: number,
+  db: DatabaseSync,
+  userId: number,
   code: string,
   secret: string,
 ): boolean {
-  return verifyTotpCode(code, secret);
+    if (!verifyTotpCode(code, secret)) {
+        return false;
+    }
+    const currentTime = Math.floor((Date.now() / 1000));
+    const timeStep = Math.floor(currentTime / 30);
+    return consumeTotpTimeStep(db, userId, timeStep);
 }
