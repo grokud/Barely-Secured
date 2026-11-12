@@ -1,3 +1,5 @@
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
 const SIGNED_DOWNLOAD_TTL_SECONDS = 5 * 60;
 
 export function createSignedDownloadPath(
@@ -11,12 +13,14 @@ export function createSignedDownloadPath(
 }
 
 export function verifySignedDownload(
-  _signingKey: Buffer,
-  _fileId: number,
+  signingKey: Buffer,
+  fileId: number,
   expiresValue: string,
   signature: string,
   nowSeconds: number = currentUnixTime(),
 ): boolean {
+      const bufferProvided = Buffer.from(signature, 'hex');
+
   if (!/^\d+$/.test(expiresValue) || !/^[a-f0-9]{64}$/.test(signature)) {
     return false;
   }
@@ -26,15 +30,25 @@ export function verifySignedDownload(
     return false;
   }
 
-  return true;
+  const signedLoad = signDownload(signingKey, fileId, expires);
+  const bufferExpected = Buffer.from(signedLoad, 'hex');
+
+  if ( bufferProvided.length !== bufferExpected.length) {
+      return false;
+  }
+
+  return timingSafeEqual(bufferProvided , bufferExpected);
 }
 
 function signDownload(
-  _signingKey: Buffer,
-  _fileId: number,
-  _expires: number,
+  signingKey: Buffer,
+  fileId: number,
+  expires: number,
 ): string {
-  return "0".repeat(64);
+  const payload = `GET\n/files/${fileId}/signed-download\n${expires}`
+  const signature = createHmac('sha256', signingKey).update(payload).digest('hex');
+
+  return signature;
 }
 
 function currentUnixTime(): number {
