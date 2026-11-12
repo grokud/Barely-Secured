@@ -421,6 +421,15 @@ function requireOwnedReview(
       "We couldn't find that review.",
     );
     return undefined;
+  } 
+  if (userId !== undefined && review.user_id !== userId) {
+      sendErrorPage(
+          res,
+          403,
+          "Forbidden",
+          "You don't have have permission to access or modify this review",
+      );
+      return undefined;
   }
   return review;
 }
