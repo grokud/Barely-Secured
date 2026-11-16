@@ -125,7 +125,7 @@ export function createAdminRouter(deps: Dependencies): Router {
   });
 
   router.post("/admin/products/:id", (req, res) => {
-    const current = requireRole(db, req, res,  "admin");
+    const current = requireRole(db, req, res, "admin");
     if (!current) {
       return;
     }

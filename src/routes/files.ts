@@ -28,7 +28,11 @@ export function createFilesRouter(deps: Dependencies): Router {
     }
 
     const file = findUploadedFileById(db, fileId);
-    if (!file || file.user_id !== current.user.id || !hasRole(current, "support", "admin")) {
+    if (
+      !file ||
+      file.user_id !== current.user.id ||
+      !hasRole(current, "support", "admin")
+    ) {
       sendErrorPage(res, 404, "File Not Found", "We couldn't find that file.");
       return;
     }

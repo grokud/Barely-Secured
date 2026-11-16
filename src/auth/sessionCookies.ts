@@ -19,12 +19,12 @@ export function setSessionCookie(
   session: CookieSession,
 ): void {
   const options = {
-      ...sessionCookieOptions, 
-      expires : new Date (session.expires_at),
+    ...sessionCookieOptions,
+    expires: new Date(session.expires_at),
   };
   response.cookie(SESSION_COOKIE_NAME, session.token, options);
 }
 
 export function clearSessionCookie(response: Response): void {
   response.clearCookie(SESSION_COOKIE_NAME, sessionCookieOptions);
-} 
+}

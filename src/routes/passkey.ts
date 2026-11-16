@@ -121,13 +121,12 @@ export function createPasskeyRouter(deps: Dependencies): Router {
     let verification;
     try {
       verification = await verifyAuthenticationResponse({
-          response: passkeyVerificationInput.response,
-          expectedChallenge: stored.challenge,
-          expectedOrigin: rpOrigin,
-          expectedRPID: rpID,
-          credential: passkeyVerificationInput.credential,
-          requireUserVerification: true,
-
+        response: passkeyVerificationInput.response,
+        expectedChallenge: stored.challenge,
+        expectedOrigin: rpOrigin,
+        expectedRPID: rpID,
+        credential: passkeyVerificationInput.credential,
+        requireUserVerification: true,
       });
     } catch (error) {
       logEvent("passkey_login_failed", { credentialId, error: String(error) });

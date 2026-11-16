@@ -15,7 +15,11 @@ import {
   clearSessionCookie,
   setSessionCookie,
 } from "../auth/sessionCookies.ts";
-import { createSession, getCurrentSession, revokeSession } from "../auth/sessions.ts";
+import {
+  createSession,
+  getCurrentSession,
+  revokeSession,
+} from "../auth/sessions.ts";
 import { verifyAndConsumeTotpCode } from "../auth/totp.ts";
 import {
   abandonTotpLoginChallenge,
@@ -380,7 +384,7 @@ export function createAuthRouter(deps: Dependencies): Router {
   router.post("/logout", (req, res) => {
     const current = getCurrentSession(db, req.header("cookie"));
     if (current) {
-        revokeSession(db, current.session.token);
+      revokeSession(db, current.session.token);
     }
     const challengeToken = getTotpLoginChallengeToken(req.header("cookie"));
     abandonTotpLoginChallenge(db, req.header("cookie"));
@@ -422,9 +426,7 @@ export function createAuthRouter(deps: Dependencies): Router {
       resetToken: token,
       resetLink,
     });
-    res
-      .type("html")
-      .send(renderPasswordResetRequestConfirmationPage());
+    res.type("html").send(renderPasswordResetRequestConfirmationPage());
   });
 
   router.get("/password-reset/:token", (req, res) => {
@@ -464,7 +466,12 @@ export function createAuthRouter(deps: Dependencies): Router {
       res
         .status(404)
         .type("html")
-        .send(renderPasswordResetForm(token, "Account not founvalidatePasswordResetTokend"));
+        .send(
+          renderPasswordResetForm(
+            token,
+            "Account not founvalidatePasswordResetTokend",
+          ),
+        );
       return;
     }
 
@@ -494,8 +501,12 @@ export function createAuthRouter(deps: Dependencies): Router {
       return;
     }
 
-    const passwordHash =  hashPassword(password);
-    const passwordResetSucceeded = resetPasswordWithToken(db, token, passwordHash);
+    const passwordHash = hashPassword(password);
+    const passwordResetSucceeded = resetPasswordWithToken(
+      db,
+      token,
+      passwordHash,
+    );
     if (!passwordResetSucceeded) {
       res
         .status(404)

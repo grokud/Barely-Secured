@@ -39,10 +39,10 @@ export function verifyAndConsumeTotpCode(
   code: string,
   secret: string,
 ): boolean {
-    if (!verifyTotpCode(code, secret)) {
-        return false;
-    }
-    const currentTime = Math.floor((Date.now() / 1000));
-    const timeStep = Math.floor(currentTime / 30);
-    return consumeTotpTimeStep(db, userId, timeStep);
+  if (!verifyTotpCode(code, secret)) {
+    return false;
+  }
+  const currentTime = Math.floor(Date.now() / 1000);
+  const timeStep = Math.floor(currentTime / 30);
+  return consumeTotpTimeStep(db, userId, timeStep);
 }

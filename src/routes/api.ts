@@ -54,15 +54,15 @@ export function createApiRouter(deps: Dependencies): Router {
     let apiKeyData;
     const apiKey = req.headers["x-api-key"];
     if (typeof apiKey === "string") {
-        apiKeyData = findApiKey(db, apiKey);
+      apiKeyData = findApiKey(db, apiKey);
     }
     if (!apiKeyData) {
-        res.status(401).json({ error: "key is missing" });
-        return;
+      res.status(401).json({ error: "key is missing" });
+      return;
     }
     if (apiKeyData.scope !== "orders:read") {
-        res.status(403).json({ error: "key is mising orders:read scope" });
-        return;
+      res.status(403).json({ error: "key is mising orders:read scope" });
+      return;
     }
     const orders = listAllOrders(db).map((order) => ({
       id: order.id,

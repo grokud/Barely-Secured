@@ -54,14 +54,14 @@ export function createAccountRouter(deps: Dependencies): Router {
     const current = requireAuth(db, req, res);
     if (!current) return;
     if (!csrfTokensMatch(current.session.csrf_token, req.body?.csrfToken)) {
-        res.redirect("/login");
-        return;
+      res.redirect("/login");
+      return;
     }
 
     logEvent("account_accessed", {
-        expiresAt: current.session.expires_at,
-        userId: current.user.id,
-        email: current.user.email,
+      expiresAt: current.session.expires_at,
+      userId: current.user.id,
+      email: current.user.email,
     });
 
     res.type("html").send(renderAccountPage(current));
@@ -178,7 +178,10 @@ export function createAccountRouter(deps: Dependencies): Router {
       return;
     }
     const currentPassword = String(req.body.currentPassword ?? "");
-    if (!currentPassword || !verifyPassword(currentPassword, current.user.password_hash)) {
+    if (
+      !currentPassword ||
+      !verifyPassword(currentPassword, current.user.password_hash)
+    ) {
       res
         .status(403)
         .type("html")
@@ -421,15 +424,15 @@ function requireOwnedReview(
       "We couldn't find that review.",
     );
     return undefined;
-  } 
+  }
   if (userId !== undefined && review.user_id !== userId) {
-      sendErrorPage(
-          res,
-          403,
-          "Forbidden",
-          "You don't have have permission to access or modify this review",
-      );
-      return undefined;
+    sendErrorPage(
+      res,
+      403,
+      "Forbidden",
+      "You don't have have permission to access or modify this review",
+    );
+    return undefined;
   }
   return review;
 }
