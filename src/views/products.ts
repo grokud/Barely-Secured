@@ -26,11 +26,11 @@ export function renderProductPage(
             (review) => `
               <article class="review">
                 <h3>${escapeHtml(review.reviewer_name)}</h3>
-                <p class="rating" aria-label="${review.rating} out of 5 stars">
-                  ${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}
+                <p class="rating" aria-label="${escapeHtml(String(review.rating))} out of 5 stars">
+                  ${escapeHtml("★".repeat(review.rating))}${escapeHtml("☆".repeat(5 - review.rating))}
                 </p>
-                <p>${review.body}</p>
-                ${current?.user.id === review.user_id ? `<a href="/account/reviews/${review.id}/edit">Edit your review</a>` : ""}
+                <p>${escapeHtml(review.body)}</p>
+                ${escapeHtml(current?.user.id === review.user_id ? `<a href="/account/reviews/${review.id}/edit">Edit your review</a>` : "")}
               </article>`,
           )
           .join("")
