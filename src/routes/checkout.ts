@@ -17,6 +17,7 @@ import {
   createPawPalReference,
 } from "../integrations/pawpal.ts";
 import { logEvent } from "../logger.ts";
+import { csrfTokensMatch } from "../csrf.ts";
 import {
   createOrderFromCart,
   findOrderById,
@@ -79,6 +80,15 @@ export function createCheckoutRouter(deps: Dependencies): Router {
     const current = requireAuth(db, req, res);
     if (!current) {
       return;
+    }
+    
+    if (!csrfTokensMatch(current.session.csrf_token, req.body?.csrfToken)) {
+        sendErrorPage(
+            res,
+            403,
+            "Forbidden",
+            "Your request could not be verified.",
+        );
     }
 
     let items = listCartItems(db, current.user.id);
