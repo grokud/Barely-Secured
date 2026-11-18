@@ -35,6 +35,7 @@ const apiCors: RequestHandler = (req, res, next) => {
     "GET, POST, PUT, PATCH, DELETE, OPTIONS",
   );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'");
 
   if (req.method === "OPTIONS") {
     res.sendStatus(204);
@@ -51,6 +52,7 @@ export function createApp(deps: Dependencies): express.Express {
   app.use((_req, res, next) => {
     const cspNonce = randomBytes(16).toString("base64");
     res.locals.cspNonce = cspNonce;
+    res.setHeader("Content-Security-Policy", `script-src 'self' 'cspNonce-${cspNonce}'`);
     res.set("X-Content-Type-Options", "nosniff");
     next();
   });
