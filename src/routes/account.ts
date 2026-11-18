@@ -53,10 +53,6 @@ export function createAccountRouter(deps: Dependencies): Router {
   router.get("/account", (req, res) => {
     const current = requireAuth(db, req, res);
     if (!current) return;
-    if (!csrfTokensMatch(current.session.csrf_token, req.body?.csrfToken)) {
-      res.redirect("/login");
-      return;
-    }
 
     logEvent("account_accessed", {
       expiresAt: current.session.expires_at,
