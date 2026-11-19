@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import { validateRequestOrigin } from "./csrf.ts";
 import type { Dependencies } from "./dependencies.ts";
 import { errorHandler, sendErrorPage } from "./errors.ts";
@@ -27,13 +28,40 @@ export function createApp(deps: Dependencies): express.Express {
   const app = express();
 
   app.use((_req, res, next) => {
-    const cspNonce = randomBytes(16).toString("base64");
-    res.locals.cspNonce = cspNonce;
-    res.setHeader("Content-Security-Policy", `script-src 'self' 'nonce-${cspNonce}'`);
-    res.setHeader("X-Frame-Options", "SAMEORIGIN");
-    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-    res.set("X-Content-Type-Options", "nosniff");
+    res.locals.cspNonce = randomBytes(16).toString("base64");
     next();
+  });
+  app.use(
+      helmet({
+          contentSecurityPolicy: {
+              directives: {
+                  scriptSrc: ["'self'", (_req, res) => {
+                      const nonce = (res as express.Response).locals.cspNonce;
+                      return nonce? `nonce-${nonce}` : "'self'";
+                  }],
+                  styleSrc: ["'self'"],
+                  frameSrc: ["'self'"],
+                  upgradeInsecureRequests: [],
+              },
+          },
+          referrerPolicy: {
+              policy: "strict-origin-when-cross-origin",
+          },
+          xFrameOptions: {
+              action: "sameorigin",
+          },
+          strictTransportSecurity: false,
+      })
+  );
+
+  const corsTargetFiles = new Set(["/shipping-widget.css", "/shipping-widget.js"]);
+  app.use((req, res, next) => {
+      if (corsTargetFiles.has(req.path)) {
+          return helmet.crossOriginResourcePolicy({
+              policy: "cross-origin",
+          })(req, res, next);
+      }
+      next();
   });
 
   app.get("/health", (_req, res) => {
