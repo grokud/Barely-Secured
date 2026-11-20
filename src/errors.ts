@@ -40,12 +40,8 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
         `<nav class="page-nav" aria-label="Primary"><a class="brand-link" href="/">Bearly Secure</a></nav>
         <p class="eyebrow">Error 500</p>
         <h1>Something went wrong</h1>
-        <p class="subtitle">The request failed, but here are the diagnostic details.</p>
-        <article class="card">
-          <h2>${escapeHtml(details.name)}</h2>
-          <p>${escapeHtml(details.message)}</p>
-          <pre>${escapeHtml(details.stack ?? "No stack trace available")}</pre>
-        </article>`,
+        <p class="subtitle">We encountered an unexpected error. Please try again later.</p>
+        <p class="page-action"><a class="button-link" href="/">Return to the store</a></p>`,
       ),
     );
 };
