@@ -37,7 +37,7 @@ export function createApp(deps: Dependencies): express.Express {
               directives: {
                   scriptSrc: ["'self'", (_req, res) => {
                       const nonce = (res as express.Response).locals.cspNonce;
-                      return nonce? `nonce-${nonce}` : "'self'";
+                      return nonce? `'nonce-${nonce}'` : "'self'";
                   }],
                   styleSrc: ["'self'"],
                   frameSrc: ["'self'"],
