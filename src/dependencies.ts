@@ -15,6 +15,7 @@ export type Dependencies = {
   downloadSigningKey: Buffer;
   keyring: Keyring | undefined;
   db: DatabaseSync;
+  pawPalApiKey: string;
 };
 
 function parseNonNegativeInteger(value: string, name: string): number {
@@ -23,6 +24,15 @@ function parseNonNegativeInteger(value: string, name: string): number {
     throw new Error(`${name} must be a non-negative integer`);
   }
   return parsed;
+}
+
+export function requireEnv(name: string) {
+    const value = process.env[name]; 
+    if (!value) {
+        throw new Error("Missing required environment variable");
+    } 
+
+    return value;
 }
 
 export function initDependencies(
@@ -52,6 +62,7 @@ export function initDependencies(
     maxPublicProductResults: 50,
     downloadSigningKey: randomBytes(32),
     keyring: loadOptionalKeyring(env),
+    pawPalApiKey: requireEnv("PAWPAL_API_KEY"),
   };
 
   return { ...values, db: openDatabase(values.databasePath) };
